@@ -27,9 +27,9 @@
   在选择tts模型时一开始让我十分崩溃，由于我最初想要说话的角色的训练数据十分少（只有完整的一段ASMR）且不适合训练（气声多且为日文），本着先选好模型再sovits转角色的想法去huggingface找模型。中文模型只有一个facebook数据训练的基于fairseq框架的模型，然而他的示例使用代码执行到sample的时候会到sklearn-crfsuite模块中出现了使用ascii编码的错误，而错误的地方在一个pyd文件中而不得不放弃更改。几经辗转才去使用vits。直接从vits项目出发搭建可能是较为麻烦的，而ChatWaifu这样的封装项目会省去一些功夫。
 
 ## 注意事项
-  ChatWaifu中我已将语音生成打包为函数，并将其wav数据作为返回值，但并未使用，暂不清楚使用该wav数据直接转base64数据能否上传，可自行尝试。
-  CQCode格式请参考go-cqhttp的文档，也有大佬指点说可以去看NoneBot的源码更进一步。
-  qq机器人指令参考pycqBot的文档，除了单独类型的CQCode都可以仿照编写。
+  ChatWaifu中我已将语音生成打包为函数，并将其wav数据作为返回值，但并未使用，暂不清楚使用该wav数据直接转base64数据能否上传，可自行尝试。<br>
+  CQCode格式请参考go-cqhttp的文档，也有大佬指点说可以去看NoneBot的源码更进一步。<br>
+  qq机器人指令参考pycqBot的文档，除了单独类型的CQCode都可以仿照编写。<br>
   模型的添加删除与索引请查看ChatWaifu。
   
   

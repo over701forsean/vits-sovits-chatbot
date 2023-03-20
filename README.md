@@ -13,7 +13,7 @@
 ## 项目环境
   下面依照我配置的顺序说明步骤：<br>
   1.下载[go-cqhttp](https://github.com/Mrs4s/go-cqhttp),这是通信的核心。<br>
-  2.安装[pycqBot](https://github.com/FengLiuFeseliud/pycqBot）,并按照文档初运行，成功登陆你的账号。<br>
+  2.安装[pycqBot](https://github.com/FengLiuFeseliud/pycqBot),并按照文档初运行，成功登陆你的账号。<br>
   3.安装[ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B)，执行其demo，确保你可以运行。<br>
   4.安装[ChatWaifu](https://github.com/cjyaddone/ChatWaifu)，项目已经集成了vits且自带模型，十分便利，确保能听到对的声音。<br>
   5.将本项目文件copy进文件夹中并替换，或者你可以参考我的代码自行编写。<br>

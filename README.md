@@ -5,9 +5,13 @@
   一个自动chatglm回复你并且可以附带不同语言的语音的对话机器人，所以抛开chatglm进行说话也是可以的。<br>
   使用了几个非常好的项目 [chatglm-6B](https://github.com/THUDM/ChatGLM-6B)，[ChatWaifu](https://github.com/cjyaddone/ChatWaifu)，[pycqBot](https://github.com/FengLiuFeseliud/pycqBot) 结合在一起，在其之上添加我所需的功能。我会写出我在编写过程中遇到的一些重要的问题，供大家参考，在代码上的不规范请多多包涵。
   
+  (PS:这两天得流感了，缓缓好了再写QAQ)
+  
 ## 功能
-  >chatglm模型加载进行智能对话。<br>
-  回复语音（base64编码）（中/日）。包括chatglm对话（选择开启）<br>
+  >一个qq机器人，
+  chatglm模型加载进行智能对话。(你可以将chatgptapi接入，其他项目有现成的)<br>
+  回复语音（base64编码）（中/日）。包括chatglm对话（选择开启）,总共近50个模型。<br>
+  获取今日新闻和知乎热榜，具体运行机器人后#help查看帮助。
   更多功能待开发···（先歇会）
   
 ## 项目环境
@@ -16,10 +20,11 @@
   2.安装[pycqBot](https://github.com/FengLiuFeseliud/pycqBot),并按照文档初运行，成功登陆你的账号。<br>
   3.安装[ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B)，执行其demo，确保你可以运行。<br>
   4.安装[ChatWaifu](https://github.com/cjyaddone/ChatWaifu)，项目已经集成了vits且自带模型，十分便利，确保能听到对的声音。<br>
+  5.下载额外的[vits-model](https://huggingface.co/spaces/sayashi/vits-models/tree/main/pretrained_models)。<br>
   5.将本项目文件copy进文件夹中并替换，或者你可以参考我的代码自行编写。<br>
   6.运行pycq.py文件。<br>
   ___
-  另辟蹊径(不推荐，需要确保模块)：<br>
+  另辟蹊径(不推荐，按各模块的requirement文件安装依赖)：<br>
   下载release里的文件，直接运行pycq。<br>
   
 ## 一些感想

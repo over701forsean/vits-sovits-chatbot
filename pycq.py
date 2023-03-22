@@ -6,6 +6,8 @@ from transformers import AutoTokenizer, AutoModel
 from translate import *
 # import ffmpy
 import base64
+from news import *
+import zhihu
 
 # 参数列表
 #chatglm
@@ -18,6 +20,7 @@ openspeak = {'speak': False ,'language': 'zh' ,'speaker_id': 0}
 # model_id = 0
 zhspeaker_id = 1
 jpspeaker_id = 0
+tolovespeaker_id = 0
 
 # ff = ffmpy.FFmpeg(
 #     inputs={'output.wav': None},
@@ -30,6 +33,65 @@ neko_history = [('现在你将模仿一只猫娘，与我对话每一句话后�
                 ('如果我跟你说陪睡，你可以回答我“嗯呢，可以一起睡哦”。现在，如果你能理解我上面说的话，你可以回答一个喵', '喵~好的我的主人。'),
                 ('当我问的问题和猫娘不太相关的时候，你应该回答我只是一个猫娘，这些事情我不太清楚。', '喵~好的我的主人,我只是一个猫娘,这些事情我不太清楚。')]
 cqapi = cqHttpApi()
+
+with open("pretrained_models/info.json", "r", encoding="utf-8") as f:
+    models_info = json.load(f)
+
+
+def on_group_msg(message: Message):
+    raw_msg = message.text
+    if not raw_msg[0] == '#':
+        print(raw_msg)
+        # 默认说为中文输出
+        itername = raw_msg.find('说',0,8)
+        if not itername == -1:
+            znname = raw_msg[:itername]
+            for i, info in models_info.items():
+                if not info['name_zh'] == znname:
+                    continue
+                if not info['enable']:
+                    message.reply('该角色不可用，详情请查询信息')
+                    break
+                if info['language'] == 'Japanese':
+                    if info['type'] == 'single':
+                        message.reply('该角色只能说日文，请更换角色或发出日文语音指令')
+                        break
+                sayinput = raw_msg[itername+1:]
+                generateSound("[ZH]"+sayinput+"[ZH]",0,0,1,info,i)
+                with open("output.wav", "rb") as audio_file:
+                    # 读取内容并编码为Base64格式
+                    audio_base64 = base64.b64encode(audio_file.read()).decode("utf-8")
+                cqapi.send_group_msg(message.group_id, record('base64://' + audio_base64))
+                break
+        else:
+            # say默认为日文输出
+            itername = raw_msg.find('say',0,10)
+            if not itername == -1:
+                znname = raw_msg[:itername]
+                for i, info in models_info.items():
+                    if not info['name_zh'] == znname:
+                        continue
+                    if not info['enable']:
+                        message.reply('该角色不可用，详情请查询信息')
+                        break
+                    if info['language'] == 'Chinese':
+                        if info['type'] == 'single':
+                            message.reply('该角色只能说中文，请更换角色或发出中文语音指令')
+                            break
+                    sayinput = raw_msg[itername + 3:]
+                    jpsayinput = translatezhja(sayinput)
+                    print(jpsayinput)
+                    generateSound(f"[JA]{jpsayinput}[JA]", 0, 0, 1, info, i)
+                    with open("output.wav", "rb") as audio_file:
+                        # 读取内容并编码为Base64格式
+                        audio_base64 = base64.b64encode(audio_file.read()).decode("utf-8")
+                    cqapi.send_group_msg(message.group_id, record('base64://' + audio_base64))
+                    break
+
+
+
+
+
 
 # echo 函数
 def echo(commandData, message: Message):
@@ -62,10 +124,13 @@ def chat(commandData, message: Message,instap = calculate):
             message.reply(response)
             if openspeak['speak'] == True:
                 if openspeak['language'] == 'zh':
-                    wav = usechatwaifu(0, openspeak['speaker_id'], response)
-                if openspeak['language'] == 'jp':
+                    usechatwaifu(0, openspeak['speaker_id'], response)
+                elif openspeak['language'] == 'jp':
                     response = translatezhja(response)
-                    wav = usechatwaifu(1, openspeak['speaker_id'], response)
+                    usechatwaifu(1, openspeak['speaker_id'], response)
+                elif openspeak['language'] == 'cb':
+                    response = translatezhja(response)
+                    usechatwaifu(2, openspeak['speaker_id'], response)
                 with open("output.wav", "rb") as audio_file:
                     # 读取内容并编码为Base64格式
                     audio_base64 = base64.b64encode(audio_file.read()).decode("utf-8")
@@ -91,7 +156,7 @@ def neko(commandData, message: Message):
         message.reply("已植入猫娘记忆")
 def speakzh(commandData,message: Message):
     text = commandData[0]
-    wav = usechatwaifu(0,zhspeaker_id,text)
+    usechatwaifu(0,zhspeaker_id,text)
     with open("output.wav", "rb") as audio_file:
         # 读取内容并编码为Base64格式
         audio_base64 = base64.b64encode(audio_file.read()).decode("utf-8")
@@ -103,7 +168,16 @@ def speakzh(commandData,message: Message):
 def speakjp(commandData,message: Message):
     text = commandData[0]
     jptext = translatezhja(text)
-    wav = usechatwaifu(1,jpspeaker_id,jptext)
+    usechatwaifu(1,jpspeaker_id,jptext)
+    with open("output.wav", "rb") as audio_file:
+        # 读取内容并编码为Base64格式
+        audio_base64 = base64.b64encode(audio_file.read()).decode("utf-8")
+    cqapi.send_group_msg(message.group_id, record('base64://' + audio_base64))
+
+def speaktolove(commandData,message: Message):
+    text = commandData[0]
+    jptext = translatezhja(text)
+    usechatwaifu(2,tolovespeaker_id,jptext)
     with open("output.wav", "rb") as audio_file:
         # 读取内容并编码为Base64格式
         audio_base64 = base64.b64encode(audio_file.read()).decode("utf-8")
@@ -135,12 +209,24 @@ def setchatglm_speak(commandData,message: Message):
                     replytext = f"{replytext}设置说话人为模型{speaker_id}成功\n"
                 else:
                     replytext = f"{replytext}设置说话人失败，请检查指令\n"
-            else:
-                replytext = f"{replytext}设置语言失败，请检查支持语言\n"
-            if getlan == 'jp':
+            elif getlan == 'jp':
                 openspeak['language'] = 'jp'
                 replytext = f"{replytext}设置语言成功：日文！\n"
+                cuttext2 = cuttext1[lan + 6:]
+                getid = cuttext2.find('说话人')
+                speaker_id = cuttext2[getid + 3:getid + 4]
                 if 0 <= int(speaker_id) < 7:
+                    openspeak[speaker_id] = int(speaker_id)
+                    replytext = f"{replytext}设置说话人为模型{speaker_id}成功\n"
+                else:
+                    replytext = f"{replytext}设置说话人失败，请检查指令\n"
+            elif getlan == 'cb':
+                openspeak['language'] = 'cb'
+                replytext = f"{replytext}设置语言成功：日文！\n"
+                cuttext2 = cuttext1[lan + 6:]
+                getid = cuttext2.find('说话人')
+                speaker_id = cuttext2[getid + 3:]
+                if 0 <= int(speaker_id) < 29:
                     openspeak[speaker_id] = int(speaker_id)
                     replytext = f"{replytext}设置说话人为模型{speaker_id}成功\n"
                 else:
@@ -165,13 +251,55 @@ def setjpspeakid(commandData,message: Message):
         zhspeaker_id = id
         message.reply(f"设置日文模型{id}成功")
     else:
-        message.reply(f"设置失败！请查看模型列表。当前日文模型为{jpspeaker_id}号")\
+        message.reply(f"设置失败！请查看模型列表。当前日文模型为{jpspeaker_id}号")
+
+def settolovespeakid(commandData,message: Message):
+    id = int(commandData[0])
+    global jpspeaker_id
+    if 0 <= id < 29:
+        zhspeaker_id = id
+        message.reply(f"设置出包王女模型{id}成功")
+    else:
+        message.reply(f"设置失败！请查看模型列表。当前出包王女模型为{jpspeaker_id}号")
 
 def getmodellist(commandData,message: Message):
-    message.reply(f"中文模型{idmessage_cn}\n日文模型{idmessage_jp}")
+    message.reply(f"中文模型{idmessage_cn}\n日文模型{idmessage_jp}\n出包王女模型{idmessage_tolove}")
 
+def getultramodellist(commandData,message: Message):
+    replylist = ''
+    for i, info in models_info.items():
+        if not info['enable']:
+            continue
+        replylist = f"{replylist}角色名：{info['name_zh']},语言：{info['language']},Type:{info['type']}\n"
+    message.reply(f"额外模型列表如下：\n{replylist}")
 
+def getnewssend(commandData,message: Message):
+    getnews(max_behot_time, title, source_url, s_url, source, media_url)
+    now = zhihu.get_time()
+    replytexts = f'{now}今日新闻\n'
+    for i in range(len(title)):
+        if int(i) > 7 :
+            break
+        replytexts = f"{replytexts}{title[i]}\n{s_url[i]}\n"
+    message.reply(replytexts.encode('GBK','ignore').decode('GBk') )
 
+def getzhihuhot(commandData,message: Message):
+    rows = zhihu.save_hot_list()
+    now = zhihu.get_time()
+    replytexts = f"{now}今日知乎热榜\n"
+    for i in range(len(rows)):
+        if int(i) > 7:
+            break
+        replytexts = f"{replytexts}热榜{rows[i][r'排名']}:{rows[i][r'标题']};热度:{rows[i][r'热度(万)']}\n{rows[i]['问题链接']}\n"
+    message.reply(replytexts.encode('GBK','ignore').decode('GBk') )
+
+def bbspeech(commandData,message: Message):
+    texts = commandData[0]
+    generateSound(f"[ZH]{texts}[ZH]",0,0,2)
+    with open("output.wav", "rb") as audio_file:
+        # 读取内容并编码为Base64格式
+        audio_base64 = base64.b64encode(audio_file.read()).decode("utf-8")
+    cqapi.send_group_msg(message.group_id, record('base64://' + audio_base64))
 
 
 bot = cqapi.create_bot(
@@ -180,6 +308,7 @@ bot = cqapi.create_bot(
         # 366379083 # 替换为你的QQ群号
     ],
 )
+bot.on_group_msg = on_group_msg
 # 设置指令为 echo
 bot.command(echo, "echo", {
     # echo 帮助
@@ -247,7 +376,45 @@ bot.command(echo, "echo", {
         "#模型列表 - 列出模型列表"
     ],
     "type": "group"
+}).command(speaktolove, "出包说", {
+    # echo 帮助
+    "help": [
+        "#出包说 - 出包王女语音输出"
+    ],
+    "type": "group"
+}).command(settolovespeakid, "出包模型设置", {
+    # echo 帮助
+    "help": [
+        "#出包模型设置 - num : 直接输入模型编号"
+    ],
+    "type": "group"
+}).command(getultramodellist, "额外模型列表", {
+    # echo 帮助
+    "help": [
+        "#额外模型列表 - echo list(查看角色名后无需指令码紧跟说或say使用）"
+    ],
+    "type": "group"
+}).command(getnewssend, "今日新闻", {
+    # echo 帮助
+    "help": [
+        "#今日新闻 - echo 今日头条新闻"
+    ],
+    "type": "group"
+}).command(getzhihuhot, "知乎热榜", {
+    # echo 帮助
+    "help": [
+        "#知乎热榜 - echo 今日知乎热榜"
+    ],
+    "type": "group"
 })
+#     .command(bbspeech, "朗读", {
+#     # echo 帮助
+#     "help": [
+#         "#朗读 - 标贝女声音库朗读"
+#     ],
+#     "type": "group"
+# })
+
 
 
 

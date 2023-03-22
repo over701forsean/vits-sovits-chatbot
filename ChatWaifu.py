@@ -6,15 +6,19 @@ import utils
 import commons
 import sys
 import re
+
 from torch import no_grad, LongTensor
 import logging
 from winsound import PlaySound
 
-chinese_model_path = ".\model\CN\model.pth"
-chinese_config_path = ".\model\CN\config.json"
-japanese_model_path = ".\model\H_excluded.pth"
-japanese_config_path = ".\model\config.json"
-
+chinese_model_path = r".\model\CN\model.pth"
+chinese_config_path = r".\model\CN\config.json"
+japanese_model_path = r".\model\H_excluded.pth"
+japanese_config_path = r".\model\config.json"
+tolove_model_path = r".\model\ToLove\1113_epochs.pth"
+tolove_config_path = r".\model\ToLove\config.json"
+bb_model_path = r".\model\G_bb_v100_820000.pth"
+bb_config_path = r".\model\bb_test.json"
 ####################################
 #CHATGPT INITIALIZE
 from pyChatGPT import ChatGPT
@@ -41,7 +45,37 @@ idmessage_jp = """ID      Speaker
 5       鞍馬小春
 6       在原七海
 """
-
+idmessage_tolove = """ID      Speaker
+0       金色の闇
+1       モモ
+2       ナナ
+3       結城美柑
+4       古手川唯
+5       黒咲芽亜
+6       ネメシス
+7       村雨静
+8       セリーヌ
+9       ララ
+10      天条院沙姫
+11      西連寺春菜
+12      ルン
+13      メイ
+14      霧崎恭子
+15      籾岡里紗
+16      沢田未央
+17      ティアーユ
+18      九条凛
+19      藤崎綾
+20      結城華
+21      御門涼子
+22      アゼンダ
+23      夕崎梨子
+24      結城梨斗
+25      ペケ
+26      猿山ケンイチ
+27      レン
+28      校長
+"""
 def get_input():
     # prompt for input
     print("You:")
@@ -132,36 +166,84 @@ def get_label(text, label):
 
 
 
-def generateSound(inputString, id, model_id):
+def generateSound(inputString, id, model_id,whichmodel = 0,info = None,iname = None):
     if '--escape' in sys.argv:
         escape = True
     else:
         escape = False
+    if whichmodel == 0:
+        #model = input('0: Chinese')
+        #config = input('Path of a config file: ')
+        if model_id == 0:
+            model = chinese_model_path
+            config = chinese_config_path
+        elif model_id == 1:
+            model = japanese_model_path
+            config = japanese_config_path
+        elif model_id == 2:
+            model = tolove_model_path
+            config = tolove_config_path
 
-    #model = input('0: Chinese')
-    #config = input('Path of a config file: ')
-    if model_id == 0:
-        model = chinese_model_path
-        config = chinese_config_path
-    elif model_id == 1:
-        model = japanese_model_path
-        config = japanese_config_path
-        
 
-    hps_ms = utils.get_hparams_from_file(config)
-    n_speakers = hps_ms.data.n_speakers if 'n_speakers' in hps_ms.data.keys() else 0
-    n_symbols = len(hps_ms.symbols) if 'symbols' in hps_ms.keys() else 0
-    emotion_embedding = hps_ms.data.emotion_embedding if 'emotion_embedding' in hps_ms.data.keys() else False
-
-    net_g_ms = SynthesizerTrn(
-        n_symbols,
-        hps_ms.data.filter_length // 2 + 1,
-        hps_ms.train.segment_size // hps_ms.data.hop_length,
-        n_speakers=n_speakers,
-        emotion_embedding=emotion_embedding,
-        **hps_ms.model)
-    _ = net_g_ms.eval()
-    utils.load_checkpoint(model, net_g_ms)
+        hps_ms = utils.get_hparams_from_file(config)
+        n_speakers = hps_ms.data.n_speakers if 'n_speakers' in hps_ms.data.keys() else 0
+        n_symbols = len(hps_ms.symbols) if 'symbols' in hps_ms.keys() else 0
+        emotion_embedding = hps_ms.data.emotion_embedding if 'emotion_embedding' in hps_ms.data.keys() else False
+        sid = info['sid']
+        ssid = LongTensor(sid)
+        net_g_ms = SynthesizerTrn(
+            n_symbols,
+            hps_ms.data.filter_length // 2 + 1,
+            hps_ms.train.segment_size // hps_ms.data.hop_length,
+            n_speakers=n_speakers,
+            emotion_embedding=emotion_embedding,
+            **hps_ms.model)
+        _ = net_g_ms.eval()
+        utils.load_checkpoint(model, net_g_ms)
+    elif whichmodel == 1:
+        hps_ms = utils.get_hparams_from_file(r'config/config.json')
+        # with open("pretrained_models/info.json", "r", encoding="utf-8") as f:
+        #     models_info = json.load(f)
+        # for i, info in models_info.items():
+        #     if not info['enable']:
+        #         continue
+        #     if not info['name_zh'] == cnname:
+        #         continue
+        ssid = LongTensor(int(info['sid']))
+            # name_en = info['name_en']
+            # name_zh = info['name_zh']
+            # title = info['title']
+            # cover = f"pretrained_models/{i}/{info['cover']}"
+            # example = info['example']
+        # language = info['language']
+        n_speakers = hps_ms.data.n_speakers if 'n_speakers' in hps_ms.data.keys() else 0
+        n_symbols = len(hps_ms.symbols) if 'symbols' in hps_ms.keys() else 0
+        emotion_embedding = hps_ms.data.emotion_embedding if 'emotion_embedding' in hps_ms.data.keys() else False
+        net_g_ms = SynthesizerTrn(
+            n_symbols,
+            hps_ms.data.filter_length // 2 + 1,
+            hps_ms.train.segment_size // hps_ms.data.hop_length,
+            n_speakers=n_speakers,
+            emotion_embedding=emotion_embedding,
+            **hps_ms.model)
+        utils.load_checkpoint(f'pretrained_models/{iname}/{iname}.pth', net_g_ms)
+    elif whichmodel == 2:
+        model = bb_model_path
+        config = bb_config_path
+        hps_ms = utils.get_hparams_from_file(config)
+        n_speakers = hps_ms.data.n_speakers if 'n_speakers' in hps_ms.data.keys() else 0
+        n_symbols = len(hps_ms.symbols) if 'symbols' in hps_ms.keys() else 0
+        emotion_embedding = hps_ms.data.emotion_embedding if 'emotion_embedding' in hps_ms.data.keys() else False
+        ssid = LongTensor([id])
+        net_g_ms = SynthesizerTrn(
+            n_symbols,
+            hps_ms.data.filter_length // 2 + 1,
+            hps_ms.train.segment_size // hps_ms.data.hop_length,
+            n_speakers=n_speakers,
+            emotion_embedding=emotion_embedding,
+            **hps_ms.model)
+        _ = net_g_ms.eval()
+        utils.load_checkpoint(model, net_g_ms)
 
     if n_symbols != 0:
         if not emotion_embedding:
@@ -183,13 +265,13 @@ def generateSound(inputString, id, model_id):
 
                     stn_tst = get_text(text, hps_ms, cleaned=cleaned)
                     
-                    speaker_id = id 
+                    # speaker_id = id
                     out_path = "output.wav"
 
                     with no_grad():
                         x_tst = stn_tst.unsqueeze(0)
                         x_tst_lengths = LongTensor([stn_tst.size(0)])
-                        sid = LongTensor([speaker_id])
+                        sid = ssid
                         audio = net_g_ms.infer(x_tst, x_tst_lengths, sid=sid, noise_scale=noise_scale,
                                                noise_scale_w=noise_scale_w, length_scale=length_scale)[0][0, 0].data.cpu().float().numpy()
 
@@ -222,25 +304,9 @@ def usechatwaifu(model_id,id,message):
         elif model_id == 1:
             resp = message
             wav = generateSound(resp, id, model_id)
+        elif model_id == 2:
+            resp = message
+            wav = generateSound(resp, id, model_id)
 
         # PlaySound(r'.\output.wav', flags=1)
         return wav
-
-        # if model_id == 0:
-        #     resp = get_input()
-        #     if(resp == "quit()"):
-        #         break
-        #     answer = resp
-        #     print("ChatGPT:")
-        #     print(answer)
-        #     generateSound("[ZH]"+answer+"[ZH]", id, model_id)
-        #     PlaySound(r'.\output.wav', flags=1)
-        # elif model_id == 1:
-        #     resp = get_input_jp()
-        #     if(resp == "quit()"):
-        #         break
-        #     answer = resp
-        #     print("ChatGPT:")
-        #     print(answer)
-        #     generateSound(answer, id, model_id)
-        #     PlaySound(r'.\output.wav', flags=1)

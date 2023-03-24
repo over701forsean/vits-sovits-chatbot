@@ -4,7 +4,8 @@
   >结合chatglm，vits，vits，pycqBot的本地部署qq聊天机器人。<br>
   让喜欢的日语系角色(so-vits模型)说中文，唱歌，并且在qq上以语音形式发出。除此之外还搭载了中日文近50名角色(vits模型)。<br>
   一个自动chatglm回复你并且可以附带不同语言的语音的对话机器人。<br>
-  使用了几个非常好的项目 [chatglm-6B](https://github.com/THUDM/ChatGLM-6B)，[ChatWaifu](https://github.com/cjyaddone/ChatWaifu)，[pycqBot](https://github.com/FengLiuFeseliud/pycqBot) ,[so-vits-svc](https://github.com/svc-develop-team/so-vits-svc),[vits-mandarin-windows](https://github.com/rotten-work/vits-mandarin-windows)结合在一起，在其之上添加我所需的功能。我会写出我在编写过程中遇到的一些重要的问题，供大家参考，在代码上的不规范请多多包涵。
+  使用了几个非常好的项目 [chatglm-6B](https://github.com/THUDM/ChatGLM-6B)，[ChatWaifu](https://github.com/cjyaddone/ChatWaifu)，[pycqBot](https://github.com/FengLiuFeseliud/pycqBot) ,[so-vits-svc](https://github.com/svc-develop-team/so-vits-svc),[vits-mandarin-windows](https://github.com/rotten-work/vits-mandarin-windows)结合在一起，在其之上添加我所需的功能。我会写出我在编写过程中遇到的一些重要的问题，供大家参考，在代码上的不规范请多多包涵。<br>
+  (最近三天流感中，好了再进行小优化)
   
 ## 功能
   >一个qq机器人，监听消息。<br>
@@ -17,6 +18,7 @@
   具体功能请具体运行机器人后#help查看帮助，或是查看pycq.py文件。
   
 ## 项目安装
+  B站视频投稿审核中````<br>
   下载最新的[release](https://github.com/over701forsean/vits-sovits-chatbot/releases),解压到某个目录下。<br>
   <br>
   >模型下载：<br>

@@ -22,7 +22,8 @@
   >模型下载：<br>
   从[ChatWaifu](https://github.com/cjyaddone/ChatWaifu)中下载模型，其应为柚子社角色，置于model文件夹中。<br>
   从[TTSModels](https://github.com/CjangCjengh/TTSModels)中下载To Love模型与config，置于名为ToLove文件夹中，并将该文件夹置于model文件夹中。<br>
-  从[vits-mandarin-windows](https://github.com/rotten-work/vits-mandarin-windows),找到标贝中文标准女声音库预训练权重，并下载，置于model文件夹中。并将对应的v100的config置于其中。<br>
+  从[vits-mandarin-windows](https://github.com/rotten-work/vits-mandarin-windows),找到标贝中文标准女声音库预训练权重，并下载，置于model文件夹中。<br>
+  下载额外的[vits-model](https://huggingface.co/spaces/sayashi/vits-models/tree/main/pretrained_models)。并将其放入pretrained_models文件夹中，不要覆盖info.json<br>
   参见[so-vits-svc](https://github.com/svc-develop-team/so-vits-svc),其中有预先下载的模型文件checkpoint_best_legacy_500.pt,按指示放入hubert文件夹中。<br>
   请把你的sovits模型(G开头)与config文件放入logs\44k中，并打开config文件，查看最底下'spk'的值，打开本项目中inference_main.py文件，将waifuname = 'riri'中的riri改为你的'spk'的值。除此以外，请查看#一定要设置的部分的前两项，更改为你的sovits的模型和config名称。如果需要唱歌，请放入干声wav后将名称集合替换第四项。<br>
   <br>

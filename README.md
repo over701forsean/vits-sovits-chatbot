@@ -15,10 +15,11 @@
   chatglm模型加载进行智能对话，可自定义历史（已预设猫娘）。(你也可以将chatgptapi接入，请参考其他项目比如[PyChatGPT](https://github.com/rawandahmad698/PyChatGPT)<br>
   回复语音（base64编码）（中/日）。包括chatglm对话（选择开启）,总共近50个模型。对于额外模型不计入指令，请查看额外模型列表中角色中文名并直接发送{name}讲/说{content}。<br>
   获取今日新闻和知乎热榜。<br>
+  可前往[vits-sovits-chatbot 简单演示效果](https://www.bilibili.com/video/BV1CV4y1X7qq)看简单演示。<br>
   具体功能请具体运行机器人后#help查看帮助，或是查看pycq.py文件。
   
 ## 项目安装
-  B站视频投稿审核中````<br>
+  可参考[vits-sovits-chatbot 简洁安装演示](https://www.bilibili.com/video/BV1bc411L72n)简洁安装演示。<br>
   下载最新的[release](https://github.com/over701forsean/vits-sovits-chatbot/releases),解压到某个目录下。<br>
   <br>
   >模型下载：<br>

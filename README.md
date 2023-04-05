@@ -5,7 +5,6 @@
   让喜欢的日语系角色(so-vits模型)说中文，唱歌，并且在qq上以语音形式发出。除此之外还搭载了中日文近50名角色(vits模型)。<br>
   一个自动chatglm回复你并且可以附带不同语言的语音的对话机器人。<br>
   使用了几个非常好的项目 [chatglm-6B](https://github.com/THUDM/ChatGLM-6B)，[ChatWaifu](https://github.com/cjyaddone/ChatWaifu)，[pycqBot](https://github.com/FengLiuFeseliud/pycqBot) ,[so-vits-svc](https://github.com/svc-develop-team/so-vits-svc),[vits-mandarin-windows](https://github.com/rotten-work/vits-mandarin-windows)结合在一起，在其之上添加我所需的功能。我会写出我在编写过程中遇到的一些重要的问题，供大家参考，在代码上的不规范请多多包涵。<br>
-  (最近三天流感中，好了再进行小优化)
   
 ## 功能
   >一个qq机器人，监听消息。<br>
@@ -60,6 +59,9 @@
   5.请参考我的代码修改。（由于魔改的文件太多，本人已经记不全所有魔改过的地方了）<br>
   6.运行pycq.py文件。<br>
   
+## 拓展模型
+  >vits的音频生成函数在ChatWaifu.py的GenerateSound函数里。其中正常的config下的模型按whichmodel==0参考改写。单config关联多模型的按whichmodel==1参考改写。像标贝女声那个项目一样config缺斤少两的，自己研究config里面需要传递的参数，比如symbols和cleaners都不同，这些自行摸索。svc的模型基本跟原项目相同，直接在生成音频文件处改参数设置就行。
+ 
 ## 一些感想
   >在pycqBot中函数已经封装的很好了，但我在尝试发送语音时总是遇到看不到语音的情况。一些CQCode发送时不能包含其它信息，而pycqBot项目中使用reply()会自动在传入cqhttp的api前包含对消息的回复（这一信息），所以只能直接使用cqapi的函数发送此类CQCode。<br>
   在选择tts模型时一开始让我十分崩溃，由于我最初想要说话的角色的训练数据十分少（只有完整的一段ASMR）且不适合训练（气声多且为日文），本着先选好模型再sovits转角色的想法去huggingface找模型。中文模型只有一个facebook数据训练的基于fairseq框架的模型，然而他的示例使用代码执行到sample的时候会到sklearn-crfsuite模块中出现了使用ascii编码的错误，而错误的地方在一个pyd文件中而不得不放弃更改。几经辗转才去使用vits。直接从vits项目出发搭建可能是较为麻烦的，而ChatWaifu这样的封装项目会省去一些功夫。

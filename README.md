@@ -19,6 +19,9 @@
   
 ## 项目安装
   可参考[vits-sovits-chatbot 简洁安装演示](https://www.bilibili.com/video/BV1bc411L72n)简洁安装演示。<br>
+  <br>
+  #WARNING:pycqBot项目更新，import类时有所变化，请参考pycqBot文档将其相关import语句变动。若遇到cqhttp提示的版本问题，请更新cqhttp的exe文件。若配置的版本对不上，请在空白文件夹处单独存放cqhttp的exe并用pycqBot初始化出配置文件后再覆盖到本项目中使用，<br>
+  <br>
   下载最新的[release](https://github.com/over701forsean/vits-sovits-chatbot/releases),解压到某个目录下。<br>
   <br>
   >模型下载：<br>
